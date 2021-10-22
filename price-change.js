@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { MARKETS, Market } = require("@project-serum/serum");
-const { Connection } = require("@solana/web3.js");
+const web3 = require("@solana/web3.js");
 const Table = require("cli-table3");
 const yargs = require("yargs");
 
@@ -55,9 +55,14 @@ async function main() {
     ],
   });
 
-  const conn = new Connection(argv.rpc);
+  const conn = new web3.Connection(argv.rpc);
 
   const markets = loadMarkets();
+  // const markets = [{
+  //   name: "IVN/USDC",
+  //   address: new web3.PublicKey("4JDhmLVobWpUaV8tr3ZGAXmSp3vMf24a2D2dVfoH1E5T"),
+  //   programId: new web3.PublicKey("9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"),
+  // }];
   for (const data of markets) {
     const market = await Market.load(conn, data.address, {}, data.programId);
     const [bidsOrderBook, asksOrderBook] = await Promise.all([
