@@ -180,7 +180,5 @@ npm install
 ### Market search
 
 ```bash
-$ ./market-search.js --token AURYydfxJib1ZkTir1Jn1J9ECYUtjb6rKQVmtYaixWPP
-Found 1 accounts:
-461R7gK9GK1kLUXQbHgaW9L6PESQFSLGxKXahvcHEJwD
+$ ./market-search.js --lendable Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB --price-change
 ```

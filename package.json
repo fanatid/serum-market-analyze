@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "@project-serum/serum": "^0.13.41",
+    "@solana/spl-token-registry": "^0.2.287",
     "@solana/web3.js": "^1.29.2",
     "@typescript-eslint/parser": "^4.28.1",
     "bs58": "^4.0.1",
