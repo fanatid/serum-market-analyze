@@ -11,7 +11,9 @@ function loadMarkets() {
 }
 
 async function main() {
-  const argv = await util.createYargsWithRpc().argv;
+  const argv = await util
+    .createYargsWithRpc()
+    .option("threshold", util.market.createThresholdOption()).argv;
 
   const conn = new web3.Connection(argv.rpc);
   const markets = loadMarkets();
@@ -20,7 +22,11 @@ async function main() {
   //   address: new web3.PublicKey("4JDhmLVobWpUaV8tr3ZGAXmSp3vMf24a2D2dVfoH1E5T"),
   //   programId: new web3.PublicKey("9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"),
   // }];
-  const table = await util.market.calculatePriceChange(conn, markets);
+  const table = await util.market.calculatePriceChange(
+    conn,
+    markets,
+    argv.threshold
+  );
   console.log(table.toString());
 }
 

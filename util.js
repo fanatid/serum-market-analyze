@@ -38,6 +38,12 @@ const dex = {
 };
 
 const market = {
+  createThresholdOption() {
+    return {
+      description: "Ignore markets with higher price change",
+      type: "number",
+    };
+  },
   createFilter(dexAddress) {
     return {
       memcmp: {
@@ -98,7 +104,7 @@ const market = {
   //   address: new web3.PublicKey("4JDhmLVobWpUaV8tr3ZGAXmSp3vMf24a2D2dVfoH1E5T"),
   //   programId: new web3.PublicKey("9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"),
   // }];
-  async calculatePriceChange(conn, markets) {
+  async calculatePriceChange(conn, markets, threshold) {
     const table = new Table({
       head: [
         "Market",
@@ -117,6 +123,7 @@ const market = {
     bar.start(markets.length, 0);
 
     for (const data of markets) {
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // TODO: remove
       const market = await Market.load(conn, data.address, {}, data.programId);
       const [bidsOrderBook, asksOrderBook] = await Promise.all([
         market.loadBids(conn),
@@ -134,14 +141,17 @@ const market = {
       const bidLiquidity = this._liquidity(bids);
       const askLiquidity = this._liquidity(asks);
 
-      table.push([
-        data.name,
-        market.address.toString(),
-        bidChange.toFixed(2),
-        askChange.toFixed(2),
-        this._priceFormat(bidLiquidity),
-        this._priceFormat(askLiquidity),
-      ]);
+      if (bidChange <= threshold && askChange <= threshold) {
+        table.push([
+          data.name,
+          market.address.toString(),
+          bidChange.toFixed(2),
+          askChange.toFixed(2),
+          this._priceFormat(bidLiquidity),
+          this._priceFormat(askLiquidity),
+        ]);
+      }
+
       bar.increment();
     }
 

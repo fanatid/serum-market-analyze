@@ -19,7 +19,8 @@ async function main() {
       description: "Calculate price change",
       default: false,
       type: "boolean",
-    }).argv;
+    })
+    .option("threshold", util.market.createThresholdOption()).argv;
 
   const conn = new web3.Connection(argv.rpc);
   const chainId = await util.getChainId(conn);
@@ -72,7 +73,11 @@ async function main() {
       address: new web3.PublicKey(address),
       programId: dex,
     }));
-    const table = await util.market.calculatePriceChange(conn, list);
+    const table = await util.market.calculatePriceChange(
+      conn,
+      list,
+      argv.threshold
+    );
     console.log(table.toString());
   } else {
     console.log(`Found ${markets.length} markets:`);

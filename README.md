@@ -1,8 +1,15 @@
 # Scripts for analyzing Serum Markets
 
 ```bash
-npm install
-./price-change.js
+$ npm install
+$ ./price-change.js --help
+Options:
+      --version    Show version number                                 [boolean]
+  -h, --help       Show help                                           [boolean]
+      --rpc        JSON RPC URL
+                       [string] [default: "https://solana-api.projectserum.com"]
+      --threshold  Ignore markets with higher price change              [number]
+$ ./price-change.js
 ```
 
 ### Price change
@@ -180,5 +187,16 @@ npm install
 ### Market search
 
 ```bash
+$  ./market-search.js --help
+Options:
+      --version       Show version number                              [boolean]
+  -h, --help          Show help                                        [boolean]
+      --rpc           JSON RPC URL
+                       [string] [default: "https://solana-api.projectserum.com"]
+      --dex           Serum Dex Address                                 [string]
+      --tradeable     Tradeable token in Serum Dex                      [string]
+      --lendable      Lendable token in Serum Dex                       [string]
+      --price-change  Calculate price change          [boolean] [default: false]
+      --threshold     Ignore markets with higher price change           [number]
 $ ./market-search.js --lendable Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB --price-change
 ```
