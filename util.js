@@ -1,4 +1,5 @@
 const bs58 = require("bs58");
+const cliProgress = require("cli-progress");
 const Table = require("cli-table3");
 const yargs = require("yargs");
 const { Market } = require("@project-serum/serum");
@@ -76,6 +77,21 @@ const market = {
     const [price1, price2] = [priceLot / sizeTotal1, priceLot / sizeTotal2];
     return 1 - price1 / price2;
   },
+  _liquidity(orders) {
+    return orders.reduce((acc, { price, size }) => acc + price * size, 0);
+  },
+  _priceFormat(value) {
+    if (value < 1e3) {
+      return `$${value.toFixed(2)}`;
+    }
+    if (value < 1e6) {
+      return `$${(value / 1e3).toFixed(3)}k`;
+    }
+    if (value < 1e9) {
+      return `$${(value / 1e6).toFixed(3)}m`;
+    }
+    return `$${(value / 1e9).toFixed(3)}b`;
+  },
   // Markets example
   // [{
   //   name: "IVN/USDC",
@@ -89,8 +105,16 @@ const market = {
         "Address",
         "Price change for $10k (bid), %",
         "Price change for $10k (ask), %",
+        "Liquidity (bid), USD",
+        "Liquidity (ask), USD",
       ],
     });
+
+    const bar = new cliProgress.SingleBar(
+      {},
+      cliProgress.Presets.shades_classic
+    );
+    bar.start(markets.length, 0);
 
     for (const data of markets) {
       const market = await Market.load(conn, data.address, {}, data.programId);
@@ -107,13 +131,21 @@ const market = {
         Math.abs(this._priceChange(bids.reverse(), 10_000)) * 100;
       const askChange = Math.abs(this._priceChange(asks, 10_000)) * 100;
 
+      const bidLiquidity = this._liquidity(bids);
+      const askLiquidity = this._liquidity(asks);
+
       table.push([
         data.name,
         market.address.toString(),
         bidChange.toFixed(2),
         askChange.toFixed(2),
+        this._priceFormat(bidLiquidity),
+        this._priceFormat(askLiquidity),
       ]);
+      bar.increment();
     }
+
+    bar.stop();
 
     return table;
   },
